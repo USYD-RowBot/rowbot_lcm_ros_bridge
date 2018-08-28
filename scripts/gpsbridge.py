@@ -34,7 +34,7 @@ def my_handler(channel, data):
     rosmsg.position_covariance_type = 0
 
     statusmsg = NavSatStat()
-    if status == 0
+    if status == 0:
         statusmsg.status = -1
     else
         statusmsg.status = 0

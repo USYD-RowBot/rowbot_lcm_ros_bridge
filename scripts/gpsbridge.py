@@ -36,7 +36,7 @@ def my_handler(channel, data):
     statusmsg = NavSatStat()
     if status == 0:
         statusmsg.status = -1
-    else
+    else:
         statusmsg.status = 0
     #USING GPS
     statusmsg.service = 1

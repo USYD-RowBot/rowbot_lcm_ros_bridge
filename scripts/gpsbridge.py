@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-
+import sys
+sys.path.insert(0, '/usr/local/lib/python2.7/dist-packages/perls/lcmtypes')
 import lcm
 from senlcm import novatel_t
 import rospy

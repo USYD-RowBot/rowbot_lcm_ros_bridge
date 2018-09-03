@@ -1,61 +1,50 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys
 sys.path.insert(0, '/usr/local/lib/python2.7/dist-packages/perls/lcmtypes')
 import lcm
 from senlcm import novatel_t
 import rospy
-from sensor_msgs import NavSatFix
-from sensor_msgs import NavSatStatus
-from std_msgs import Header
+from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import NavSatStatus
+from std_msgs.msg import Header
 seq = 0
 
 
 
 def my_handler(channel, data):
-    pub = rospy.Publisher('rowbot/fix', String, queue_size=10)
+    global seq
+    pub = rospy.Publisher('rowbot/fix', NavSatFix, queue_size=10)
 
     #Read the LCM Data
-    msg = senlcm_gpsd3_t.decode(data)
+    msg = novatel_t.decode(data)
     utime = msg.utime
-    status = msg.online
-    fix = gpsd3_fix_t.decode(msg.fix)
-    latitude = fix.latitiude
-    longitude = fix.longitude
-    altitiude = fix.altitude
-    speed = fix.speed
-    climb = fix.climb
-    tag = msg.tag
-
+    status = msg.status
+    latitude = msg.latitude
+    longitude = msg.longitude
+    altitude = 0
+    tag = "gps"
     #Write Data to ROS Message
     rosmsg = NavSatFix()
-    rosmsg.latitude = latitiude
+    rosmsg.latitude = latitude
     rosmsg.longitude = longitude
-    rosmsg.altitude = alititude
+    rosmsg.altitude = altitude
     rosmsg.position_covariance = [0,0,0,0,0,0,0,0,0]
     rosmsg.position_covariance_type = 0
-
-    statusmsg = NavSatStat()
-    if status == 0:
-        statusmsg.status = -1
-    else:
-        statusmsg.status = 0
-    #USING GPS
-    statusmsg.service = 1
-
-    rosmsg.status = statusmsg
 
     headermsg = Header()
     seq = seq+1;
     headermsg.seq = seq
-    headermsg.stamp = utime
+    headermsg.stamp = rospy.Time.now()
     headermsg.frame_id = tag
-
-    pub.publish(msg)
+    rosmsg.header = headermsg
+    
+    print("Got GPS INFO")
+    pub.publish(rosmsg)
 
 lc = lcm.LCM()
 rospy.init_node('lcmtoRosFix', anonymous=True)
 
-subscription = lc.subscribe("WAMV.GPSD_CLIENT", my_handler)
+subscription = lc.subscribe("NOVATEL", my_handler)
 
 try:
     while True:

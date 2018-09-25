@@ -1,0 +1,7 @@
+byte relay_number;
+bool relay_request;
+int32 relay_off_delay;
+byte io_number;
+bool io_request;
+---
+RelayStatus status;

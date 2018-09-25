@@ -13,7 +13,7 @@ seq = 0
 
 def my_handler(channel, data):
     global seq
-    pub = rospy.Publisher('rowbot/fix', NavSatFix, queue_size=10)
+    pub = rospy.Publisher('fix', NavSatFix, queue_size=10)
 
     #Read the LCM Data
     msg = novatel_t.decode(data)
@@ -37,13 +37,14 @@ def my_handler(channel, data):
     headermsg.stamp = rospy.Time.now()
     headermsg.frame_id = tag
     rosmsg.header = headermsg
-    
-    print("Got GPS INFO")
+
+    rospy.loginfo("Got GPS INFO")
     pub.publish(rosmsg)
 
 lc = lcm.LCM()
 rospy.init_node('lcmtoRosFix', anonymous=True)
 
+#TODO GET CHANNEL FROM PARAM
 subscription = lc.subscribe("NOVATEL", my_handler)
 
 try:

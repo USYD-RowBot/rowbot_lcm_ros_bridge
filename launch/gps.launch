@@ -1,0 +1,3 @@
+<launch>
+    <node pkg = "rowbot_lcm_ros_bridge" type="gpsbridge.py" name="gps_bridge"/>
+</launch>

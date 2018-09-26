@@ -4,9 +4,8 @@ sys.path.insert(0, '/usr/local/lib/python2.7/dist-packages/perls/lcmtypes')
 import lcm
 import rospy
 from acfrlcm import relay_command_t, relay_status_t
-from rowbot_ros_lcm_bridge.srv import RelayCommand
-from rowbot_ros_lcm_bridge.msg import RelayStatus
-seq = 0;
+from rowbot_lcm_ros_bridge.srv import RelayCommand
+from rowbot_lcm_ros_bridge.msg import RelayStatus
 lc = lcm.LCM()
 def sendRelayCommand(req):
     rospy.logdebug("Sending Relay Command")
@@ -20,22 +19,24 @@ def sendRelayCommand(req):
     lc.publish("WAMV.RELAY_COMMAND",relay_msg_lcm.encode())
     return true
 
-def reciveRelayStatus(relay_status):
+def recieveRelayStatus(channel,relay_status):
     rospy.logdebug("Recieved lcm relay status")
     relay_status_msg_lcm = relay_status_t.decode(relay_status)
-    seq = seq + 1
+    seq = 0
     relay_status_msg_ros = RelayStatus()
     relay_status_msg_ros.header.stamp  = rospy.Time.now()
-    relay.status_msg_ros.header.seq = seq;
-    relay_status_msg_ros.state_list = relay_status_msg_lcm.state_list
+    relay_status_msg_ros.header.seq = seq;
+    for i in relay_status_msg_lcm.state_list:
+
+    #TODO CONVERT ARRAY OF BYTES TO LIST OF BOOLS
     pub = rospy.Publisher('relay/status',RelayStatus,queue_size=10)
     pub.publish(relay_status_msg_ros);
 
 if __name__ == "__main__":
     rospy.init_node("relay_command_bridge")
     s = rospy.Service('relay_command', RelayCommand, sendRelayCommand)
-    rospy.logdebug("Initalized relay_command_service)
-    subscription = lc.subscriber("WAMV.RELAY_STATUS",recieveRelayStatus)
+    rospy.logdebug("Initalized relay_command_service")
+    subscription = lc.subscribe("WAMV.RELAY_STATUS",recieveRelayStatus)
     rospy.loginfo("Initalied relay_lcm_ros_bridge");
     while( not rospy.is_shutdown()):
         lc.handle()

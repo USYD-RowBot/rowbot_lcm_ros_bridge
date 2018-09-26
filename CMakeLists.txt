@@ -10,6 +10,7 @@ project(rowbot_lcm_ros_bridge)
 find_package(catkin REQUIRED COMPONENTS
   message_generation
   rospy
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,6 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
    FILES
    MotorStatus.msg
+   RelayStatus.msg
 )
 
 ## Generate services in the 'srv' folder

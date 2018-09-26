@@ -1,2 +1,2 @@
-Header header;
-byte state_list[]; 
+Header header
+bool[] state_list 

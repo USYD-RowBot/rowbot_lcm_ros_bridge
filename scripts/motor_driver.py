@@ -5,17 +5,16 @@ import rospy
 import lcm
 
 from acfrlcm import asv_torqeedo_motor_command_t
-from robotx_gazebo import UsvDrive
-from std_msgs import Float64
-
+from std_msgs.msg import Float32
+lc = lcm.LCM()
 
 def callback_left(message):
-    port_channel  = "PORT_MOTOR_CONTROL"
+    port_channel  = "WAMV.PORT_MOTOR_CONTROL"
     port = message.data
     port_msg = asv_torqeedo_motor_command_t()
     utime = long(rospy.get_time())*1000000
 
-    port_msg.command_speed = port
+    port_msg.command_speed = port*650
     port_msg.enabled = True
     port_msg.utime = utime
     rospy.logdebug("Publishing port")
@@ -23,20 +22,21 @@ def callback_left(message):
 
 def callback_right(message):
     utime = long(rospy.get_time())*1000000
-    starboard_channel  = "STBD_MOTOR_CONTROL"
+    starboard_channel  = "WAMV.STBD_MOTOR_CONTROL"
     starboard = message.data
     starboard_msg = asv_torqeedo_motor_command_t()
-    starboard_msg.command_speed = starboard
-    starboard_msg.enable = True
+    starboard_msg.command_speed = starboard*650
+    starboard_msg.enabled = True
     starboard_msg.utime = utime
     rospy.logdebug("Publising starboard")
     lc.publish(starboard_channel, starboard_msg.encode())
 
 
 
-if __name__ = "__main__":
-    rospy.init("motor_lcm_driver")
-    rospy.Subscriber("left_motor", Float64, callback_left)
-    rospy.Subscriber("right_motor", Float64, callback_right)
+if __name__ == "__main__":
+    rospy.init_node("motor_lcm_driver")
+    rospy.loginfo("Started lcm_driver")
+    rospy.Subscriber("left_thrust_cmd", Float32, callback_left)
+    rospy.Subscriber("right_thrust_cmd", Float32, callback_right)
     #rospy.Subscriber("cmd_drive", UsvDrive, callback)
     rospy.spin()

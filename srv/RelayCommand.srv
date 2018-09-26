@@ -4,4 +4,4 @@ int32 relay_off_delay;
 byte io_number;
 bool io_request;
 ---
-RelayStatus status;
+bool status;

@@ -1,2 +1,2 @@
 Header header;
-int state_list[]; 
+byte state_list[]; 

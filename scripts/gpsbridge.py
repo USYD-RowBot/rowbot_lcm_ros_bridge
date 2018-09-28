@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 import sys
+import math
 sys.path.insert(0, '/usr/local/lib/python2.7/dist-packages/perls/lcmtypes')
 import lcm
 from senlcm import novatel_t
@@ -25,8 +26,8 @@ def my_handler(channel, data):
     tag = "gps"
     #Write Data to ROS Message
     rosmsg = NavSatFix()
-    rosmsg.latitude = latitude
-    rosmsg.longitude = longitude
+    rosmsg.latitude = math.degrees(latitude)
+    rosmsg.longitude = math.degrees(longitude)
     rosmsg.altitude = altitude
     rosmsg.position_covariance = [0,0,0,0,0,0,0,0,0]
     rosmsg.position_covariance_type = 0

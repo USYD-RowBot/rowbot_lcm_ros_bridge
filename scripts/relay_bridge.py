@@ -16,8 +16,8 @@ def sendRelayCommand(req):
     relay_msg_lcm.relay_off_delay = req.relay_off_delay
     relay_msg_lcm.io_number = req.io_number
     relay_msg_lcm.io_request=req.io_request
-    lc.publish("WAMV.RELAY_COMMAND",relay_msg_lcm.encode())
-    return true
+    lc.publish("WAMV.RELAY_CONTROL",relay_msg_lcm.encode())
+    return True
 
 def recieveRelayStatus(channel,relay_status):
     rospy.logdebug("Recieved lcm relay status")
@@ -26,9 +26,18 @@ def recieveRelayStatus(channel,relay_status):
     relay_status_msg_ros = RelayStatus()
     relay_status_msg_ros.header.stamp  = rospy.Time.now()
     relay_status_msg_ros.header.seq = seq;
-    for i in relay_status_msg_lcm.state_list:
-
-    #TODO CONVERT ARRAY OF BYTES TO LIST OF BOOLS
+    binary_string = ""
+    for x in relay_status_msg_lcm.state_list:
+        binary = ord(x)
+        binary_string = binary_string + format(binary,'08b')
+    rospy.logdebug(binary_string)
+    output_list = []
+    for i in binary_string:
+        if i == "1":
+            output_list.append(True)
+        else:
+            output_list.append(False)
+    relay_status_msg_ros.state_list = output_list
     pub = rospy.Publisher('relay/status',RelayStatus,queue_size=10)
     pub.publish(relay_status_msg_ros);
 

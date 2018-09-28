@@ -10,7 +10,7 @@ from sensor_msgs.msg import NavSatFix
 from sensor_msgs.msg import NavSatStatus
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
-from sensor_msgs.msgs import Imu
+from sensor_msgs.msg import Imu
 seq = 0
 
 
@@ -31,18 +31,18 @@ def my_handler(channel, data):
     headermsg.frame_id = gps_frame
 
     msg = auv_acfr_nav_t.decode(data)
-    if use_fix = True:
-        rospy.lodebug("Publising gps info")
+    if use_fix== True:
+        rospy.logdebug("Publising gps info")
         fixmsg = NavSatFix()
         fixmsg.header = headermsg
         fixmsg.latitude = math.radians(msg.latitude)
         fixmsg.longitude = math.radians(msg.longitude)
-        fixmsg.alitiude = msg.altitude
+        fixmsg.altitude = msg.altitude
         fixmsg.position_covariance = [0,0,0,0,0,0,0,0,0]
         fixmsg.position_covariance_type = 0
         fix_pub.publish(fixmsg)
 
-    if use_imu = True:
+    if use_imu == True:
         rospy.logdebug("Publishing imu")
         imumsg = Imu()
         q = quaternion_from_euler(msg.roll, msg.pitch, msg.heading)
@@ -53,18 +53,18 @@ def my_handler(channel, data):
         imumsg.angular_velocity.z = msg.headingRate
 
         imu_pub.publish(imumsg)
-    if use_odom = True:
+    if use_odom == True:
         rospy.logdebug("Publishing odom")
         odommsg = Odometry()
-        odomsg.header = headermsg
-        odomsg.header.frame_id = "odom"
+        odommsg.header = headermsg
+        odommsg.header.frame_id = "odom"
 
         #TODO, USE TRANSFORM
-        odomsg.child_frame_id = base_link
+        odommsg.child_frame_id ="base_link"
         odommsg.pose.pose.position.x = msg.x
         odommsg.pose.pose.position.y = msg.y
         odommsg.pose.pose.position.z = msg.altitude
-        odom.pose.pose.orientation = q
+        odommsg.pose.pose.orientation = q
         odommsg.twist.twist.linear.x = msg.vx
         odommsg.twist.twist.linear.y = msg.vy
         odommsg.twist.twist.linear.z = msg.vz
@@ -80,7 +80,7 @@ lc = lcm.LCM()
 rospy.init_node('lcmtoRosFix', anonymous=True)
 
 #TODO GET CHANNEL FROM PARAM
-subscription = lc.subscribe("WAMV.ACFRNAV", my_handler)
+subscription = lc.subscribe("WAMV.ACFR_NAV", my_handler)
 
 try:
     while True:

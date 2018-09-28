@@ -46,7 +46,10 @@ def my_handler(channel, data):
         rospy.logdebug("Publishing imu")
         imumsg = Imu()
         q = quaternion_from_euler(msg.roll, msg.pitch, msg.heading)
-        imumsg.orientation = q
+        imumsg.orientation.x = q[0]
+        imumsg.orientation.y = q[1]
+        imumsg.orientation.z = q[2]
+        imumsg.orientation.w = q[3]
 
         imumsg.angular_velocity.x = msg.rollRate
         imumsg.angular_velocity.y = msg.pitchRate
@@ -54,6 +57,8 @@ def my_handler(channel, data):
 
         imu_pub.publish(imumsg)
     if use_odom == True:
+        q = quaternion_from_euler(msg.roll, msg.pitch, msg.heading)
+
         rospy.logdebug("Publishing odom")
         odommsg = Odometry()
         odommsg.header = headermsg
@@ -64,7 +69,12 @@ def my_handler(channel, data):
         odommsg.pose.pose.position.x = msg.x
         odommsg.pose.pose.position.y = msg.y
         odommsg.pose.pose.position.z = msg.altitude
-        odommsg.pose.pose.orientation = q
+        odommsg.pose.pose.orientation.x = q[0]
+        odommsg.pose.pose.orientation.y = q[1]
+        odommsg.pose.pose.orientation.z = q[2]
+        odommsg.pose.pose.orientation.w = q[3]
+
+
         odommsg.twist.twist.linear.x = msg.vx
         odommsg.twist.twist.linear.y = msg.vy
         odommsg.twist.twist.linear.z = msg.vz

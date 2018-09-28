@@ -86,7 +86,7 @@ def my_handler(channel, data):
 
         odom_pub.publish(odommsg)
         br.sendTransform((msg.x, msg.y, 0),
-                     tf.transformations.quaternion_from_euler(0, 0, msg.theta),
+                     tf.transformations.quaternion_from_euler(msg.roll, msg.pitch, msg.heading),
                      rospy.Time.now(),
                      "base_link",
                      "odom")

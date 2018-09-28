@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0, '/usr/local/lib/python2.7/dist-packages/perls/lcmtypes')
 import lcm
 import math
+import tf
 from acfrlcm import auv_acfr_nav_t
 import rospy
 from tf.transformations import quaternion_from_euler
@@ -57,6 +58,7 @@ def my_handler(channel, data):
 
         imu_pub.publish(imumsg)
     if use_odom == True:
+        br = tf.TransformBroadcaster()
         q = quaternion_from_euler(msg.roll, msg.pitch, msg.heading)
 
         rospy.logdebug("Publishing odom")
@@ -83,6 +85,11 @@ def my_handler(channel, data):
         odommsg.twist.twist.angular.z = msg.headingRate
 
         odom_pub.publish(odommsg)
+        br.sendTransform((msg.x, msg.y, 0),
+                     tf.transformations.quaternion_from_euler(0, 0, msg.theta),
+                     rospy.Time.now(),
+                     "base_link",
+                     "odom")
 
 
 

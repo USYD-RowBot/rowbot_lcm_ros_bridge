@@ -9,7 +9,8 @@ from std_msgs.msg import Float32
 lc = lcm.LCM()
 
 def callback_left(message):
-    port_channel  = "WAMV.PORT_MOTOR_CONTROL"
+    # port_channel  = "WAMV.PORT_MOTOR_CONTROL"
+    port_channel = "WAMV.LEFT_ROS_CMD"
     port = message.data
     port_msg = asv_torqeedo_motor_command_t()
     utime = long(rospy.get_time())*1000000
@@ -22,7 +23,8 @@ def callback_left(message):
 
 def callback_right(message):
     utime = long(rospy.get_time())*1000000
-    starboard_channel  = "WAMV.STBD_MOTOR_CONTROL"
+    # starboard_channel = "WAMV.STBD_MOTOR_CONTROL"  # This controls the motors directly
+    starboard_channel = "WAMV.RIGHT_ROS_CMD"
     starboard = message.data
     starboard_msg = asv_torqeedo_motor_command_t()
     starboard_msg.command_speed = starboard*650

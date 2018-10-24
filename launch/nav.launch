@@ -1,0 +1,3 @@
+<launch>
+    <node pkg = "rowbot_lcm_ros_bridge" type="nav_bridge.py" name="nav_bridge"/>
+</launch>

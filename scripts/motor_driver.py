@@ -15,7 +15,7 @@ def callback_left(message):
     port_msg = asv_torqeedo_motor_command_t()
     utime = long(rospy.get_time())*1000000
 
-    port_msg.command_speed = port*650
+    port_msg.command_speed = port
     port_msg.enabled = True
     port_msg.utime = utime
     rospy.logdebug("Publishing port")
@@ -27,7 +27,7 @@ def callback_right(message):
     starboard_channel = "WAMV.RIGHT_ROS_CMD"
     starboard = message.data
     starboard_msg = asv_torqeedo_motor_command_t()
-    starboard_msg.command_speed = starboard*650
+    starboard_msg.command_speed = starboard
     starboard_msg.enabled = True
     starboard_msg.utime = utime
     rospy.logdebug("Publising starboard")

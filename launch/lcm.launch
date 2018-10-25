@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find rowbot_lcm_ros_bridge)/launch/motor.launch"/>
+  <include file="$(find rowbot_lcm_ros_bridge)/launch/gps.launch"/>
+  <include file="$(find rowbot_lcm_ros_bridge)/launch/relay.launch"/>
+</launch>

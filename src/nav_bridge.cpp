@@ -3,10 +3,12 @@
 #include <lcm/lcm-cpp.hpp>
 #include <math.h>
 #include "perls-lcmtypes++/acfrlcm/auv_acfr_nav_t.hpp"
+#include "perls-lcmtypes++/acfrlcm/auv_relay_t.hpp"
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/Header.h>
+#include <std_msgs/String.h>
 #include <tf/transform_datatypes.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -21,6 +23,7 @@ class NavBridge
             odomPub_ = n_.advertise<nav_msgs::Odometry>("/odom", 1);
             fixPub_ = n_.advertise<sensor_msgs::NavSatFix>("/fix", 1);
             imuPub_ = n_.advertise<sensor_msgs::Imu>("/imu", 1);
+            modePub_ = n_.advertise<std_msgs::String>("/vessel_mode", 1);
         }
         ~NavBridge() {}
 
@@ -111,11 +114,39 @@ class NavBridge
                 x += 2*M_PI;
             return x - M_PI;
         }
+
+
+        void handleMode(const lcm::ReceiveBuffer* rbuf,
+                const std::string& chan,
+                const acfrlcm::auv_relay_t *msg)
+        {
+            if(ros::ok)
+            {
+                std::string mode_colour;
+                if(msg->state == 0)
+                {
+                    mode_colour = "red";
+                }
+                else if(msg->state == 1)
+                {
+                    mode_colour = "orange";
+                }
+                else if(msg->state == 2)
+                {
+                    mode_colour = "green";
+                }
+                std_msgs::String mode_msg;
+                mode_msg.data = mode_colour;
+                modePub_.publish(mode_msg);
+            }
+        }
+         
     private:
         ros::NodeHandle n_;
         ros::Publisher odomPub_;
         ros::Publisher imuPub_;
         ros::Publisher fixPub_;
+        ros::Publisher modePub_;
         int seq_;
 
 };
@@ -131,6 +162,7 @@ int main(int argc, char** argv)
 
     NavBridge nb;
     lcm.subscribe("WAMV.ACFR_NAV", &NavBridge::handleMessage, &nb);
+    lcm.subscribe("WAMV.ACFR_NAV", &NavBridge::handleMode, &nb);
 
     while(0 == lcm.handle());
 

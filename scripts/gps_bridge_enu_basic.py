@@ -45,7 +45,7 @@ def my_handler(channel, data):
     if use_imu == True:
         rospy.logdebug("Publishing imu")
         imumsg = Imu()
-        q = quaternion_from_euler(msg.pitch, msg.roll, -np.unwrap(msg.heading-np.pi/2)) # TODO check this
+        q = quaternion_from_euler(msg.pitch, msg.roll, -np.unwrap(np.array([msg.heading-np.pi/2]))) # TODO check this
         imumsg.orientation.x = q[0]
         imumsg.orientation.y = q[1]
         imumsg.orientation.z = q[2]
@@ -58,7 +58,7 @@ def my_handler(channel, data):
         imu_pub.publish(imumsg)
     if use_odom == True:
         br = tf.TransformBroadcaster()
-        q = quaternion_from_euler(msg.pitch, msg.roll, -np.unwrap(msg.heading-np.pi/2)) # TODO check this
+        q = quaternion_from_euler(msg.pitch, msg.roll, -np.unwrap(np.array([msg.heading-np.pi/2]))) # TODO check this
 
         rospy.logdebug("Publishing odom")
         odommsg = Odometry()
@@ -85,7 +85,7 @@ def my_handler(channel, data):
 
         odom_pub.publish(odommsg)
         br.sendTransform((msg.y, msg.x, 0),
-                     tf.transformations.quaternion_from_euler(msg.pitch, msg.roll, -np.unwrap(msg.heading-np.pi/2)),
+                     tf.transformations.quaternion_from_euler(msg.pitch, msg.roll, -np.unwrap(np.array([msg.heading-np.pi/2]))),
                      rospy.Time.now(),
                      "base_link",
                      "odom")
